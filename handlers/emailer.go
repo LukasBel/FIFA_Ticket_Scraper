@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/smtp"
 	"os"
-	"time"
 )
 
 type EmailAgent struct {
@@ -14,7 +13,7 @@ type EmailAgent struct {
 }
 
 func SendMail(to []string) error {
-	defer time.Sleep(time.Hour * 3)
+	//defer time.Sleep(time.Hour * 3)		//rather just defer calling the function than make it sleep
 
 	err := godotenv.Load(".env")
 	if err != nil {

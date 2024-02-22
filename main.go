@@ -52,10 +52,57 @@ func (r *Repository) GetUsers(c *fiber.Ctx) error {
 	return nil
 }
 
+func (r *Repository) DeleteUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	userModel := &models.User{}
+
+	if id == "" {
+		c.Status(http.StatusUnprocessableEntity).JSON(&fiber.Map{"message": "empty ID"})
+		return nil
+	}
+
+	err := r.DB.Where("id = ?", id).Delete(&userModel).Error
+	if err != nil {
+		c.Status(http.StatusBadRequest).JSON(&fiber.Map{"message": "failed to delete user"})
+		return err
+	}
+
+	c.Status(http.StatusOK).JSON(&fiber.Map{"message": "user deleted successfully"})
+	return nil
+
+}
+
+func (r *Repository) UpdateUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	userModel := &models.User{}
+	newModel := Users{}
+
+	err := c.BodyParser(&newModel)
+	if err != nil {
+		return err
+	}
+
+	if id == "" {
+		c.Status(http.StatusUnprocessableEntity).JSON(&fiber.Map{"message": "empty ID"})
+		return nil
+	}
+	err = r.DB.Model(userModel).Where("id = ?", id).Updates(newModel).Error
+
+	if err != nil {
+		c.Status(http.StatusBadRequest).JSON(&fiber.Map{"message": "failed to update user"})
+		return err
+	}
+
+	c.Status(http.StatusOK).JSON(&fiber.Map{"message": "user updated successfully", "data": userModel})
+	return nil
+}
+
 func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/FIFA")
 	api.Get("/users", r.GetUsers)
 	api.Post("/create", r.RegisterEmail)
+	api.Delete("/delete", r.DeleteUser)
+	api.Put("/update", r.UpdateUser)
 }
 
 func main() {
@@ -90,6 +137,11 @@ func main() {
 		log.Fatal("Failed to migrate database")
 	}
 
+	err = handlers.SendMail(emailAddresses)
+	if err != nil {
+		log.Panic(err)
+	}
+
 	app := fiber.New()
 	r.SetupRoutes(app)
 
@@ -98,11 +150,11 @@ func main() {
 		log.Fatal("Failed to listen on port 8080")
 	}
 
-	for {
-		err = handlers.SendMail(emailAddresses)
-		if err != nil {
-			log.Panic(err)
-		}
-	}
+	//for {
+	//	err = handlers.SendMail(emailAddresses)
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//}
 
 }
