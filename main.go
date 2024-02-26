@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 )
 
 type Users struct {
@@ -97,6 +96,18 @@ func (r *Repository) UpdateUser(c *fiber.Ctx) error {
 	return nil
 }
 
+func (r *Repository) GetUsersEmails() ([]string, error) {
+	var emails []string
+	var users []models.User
+	if err := r.DB.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	for _, user := range users {
+		emails = append(emails, user.Email)
+	}
+	return emails, nil
+}
+
 func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/FIFA")
 	api.Get("/users", r.GetUsers)
@@ -111,8 +122,8 @@ func main() {
 		log.Panic(err)
 	}
 
-	emails := os.Getenv("TO")
-	emailAddresses := strings.Split(emails, ",")
+	//emails := os.Getenv("TO")
+	//emailAddresses := strings.Split(emails, ",")
 
 	config := &storage.Config{
 		Host:     os.Getenv("DB_HOST"),
@@ -136,6 +147,8 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to migrate database")
 	}
+
+	emailAddresses, err := r.GetUsersEmails()
 
 	err = handlers.SendMail(emailAddresses)
 	if err != nil {
