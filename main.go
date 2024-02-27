@@ -1,7 +1,6 @@
 package main
 
 import (
-	"FIFA/handlers"
 	"FIFA/models"
 	"FIFA/storage"
 	"github.com/gofiber/fiber/v2"
@@ -112,7 +111,7 @@ func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/FIFA")
 	api.Get("/users", r.GetUsers)
 	api.Post("/create", r.RegisterEmail)
-	api.Delete("/delete", r.DeleteUser)
+	api.Delete("/delete/:id", r.DeleteUser)
 	api.Put("/update", r.UpdateUser)
 }
 
@@ -121,9 +120,6 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-
-	//emails := os.Getenv("TO")
-	//emailAddresses := strings.Split(emails, ",")
 
 	config := &storage.Config{
 		Host:     os.Getenv("DB_HOST"),
@@ -148,12 +144,12 @@ func main() {
 		log.Fatal("Failed to migrate database")
 	}
 
-	emailAddresses, err := r.GetUsersEmails()
-
-	err = handlers.SendMail(emailAddresses)
-	if err != nil {
-		log.Panic(err)
-	}
+	//emailAddresses, err := r.GetUsersEmails()
+	//
+	//err = handlers.SendMail(emailAddresses)
+	//if err != nil {
+	//	log.Panic(err)
+	//}
 
 	app := fiber.New()
 	r.SetupRoutes(app)
