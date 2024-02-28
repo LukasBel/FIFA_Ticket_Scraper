@@ -4,6 +4,7 @@ import (
 	"FIFA/models"
 	"FIFA/storage"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 	"log"
@@ -108,6 +109,8 @@ func (r *Repository) GetUsersEmails() ([]string, error) {
 }
 
 func (r *Repository) SetupRoutes(app *fiber.App) {
+	app.Use(cors.New()) //this is a middleware that allows for cross-origin requests
+
 	api := app.Group("/FIFA")
 	api.Get("/users", r.GetUsers)
 	api.Post("/create", r.RegisterEmail)
