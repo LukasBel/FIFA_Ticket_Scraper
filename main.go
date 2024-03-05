@@ -1,6 +1,7 @@
 package main
 
 import (
+	"FIFA/handlers"
 	"FIFA/models"
 	"FIFA/storage"
 	"github.com/gofiber/fiber/v2"
@@ -147,12 +148,12 @@ func main() {
 		log.Fatal("Failed to migrate database")
 	}
 
-	//emailAddresses, err := r.GetUsersEmails()
-	//
-	//err = handlers.SendMail(emailAddresses)
-	//if err != nil {
-	//	log.Panic(err)
-	//}
+	emailAddresses, err := r.GetUsersEmails()
+
+	err = handlers.SendMail(emailAddresses)
+	if err != nil {
+		log.Panic(err)
+	}
 
 	app := fiber.New()
 	r.SetupRoutes(app)
@@ -161,12 +162,5 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to listen on port 8080")
 	}
-
-	//for {
-	//	err = handlers.SendMail(emailAddresses)
-	//	if err != nil {
-	//		log.Panic(err)
-	//	}
-	//}
 
 }
