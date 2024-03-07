@@ -30,6 +30,20 @@ func (r *Repository) RegisterEmail(c *fiber.Ctx) error {
 		return err
 	}
 
+	if !handlers.ValidEmail(UserModel.Email) {
+		c.Status(http.StatusUnprocessableEntity).JSON(&fiber.Map{"message": "Invalid email"})
+		return nil
+
+	} else if handlers.EmailExists(UserModel.Email, r.DB) {
+		c.Status(http.StatusUnprocessableEntity).JSON(&fiber.Map{"message": "Email already exists"})
+		return nil
+
+	} else if handlers.EmailBlacklisted(UserModel.Email) {
+		c.Status(http.StatusUnprocessableEntity).JSON(&fiber.Map{"message": "Email blacklisted"})
+		return nil
+
+	}
+
 	err = r.DB.Create(UserModel).Error
 	if err != nil {
 		c.Status(http.StatusBadRequest).JSON(&fiber.Map{"message": "failed to create database entry"})
@@ -148,12 +162,12 @@ func main() {
 		log.Fatal("Failed to migrate database")
 	}
 
-	emailAddresses, err := r.GetUsersEmails()
-
-	err = handlers.SendMail(emailAddresses)
-	if err != nil {
-		log.Panic(err)
-	}
+	//emailAddresses, err := r.GetUsersEmails()
+	//
+	//err = handlers.SendMail(emailAddresses)
+	//if err != nil {
+	//	log.Panic(err)
+	//}
 
 	app := fiber.New()
 	r.SetupRoutes(app)
