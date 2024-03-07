@@ -42,3 +42,10 @@ func Message() []byte {
 	message := []byte(subject + body)
 	return message
 }
+
+func VerifyMessage() []byte {
+	subject := "Please verify your email"
+	body := "Please click the link below to verify your email\n"
+	message := []byte(subject + body)
+	return message
+}
