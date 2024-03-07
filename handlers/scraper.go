@@ -19,7 +19,7 @@ func WebScraper() (string, error) {
 		fmt.Println("Status:", response.StatusCode)
 	})
 
-	c.OnHTML("div.pt-3", func(element *colly.HTMLElement) {
+	c.OnHTML("div.fc-text-section_wrapperClassName__Sgd9D", func(element *colly.HTMLElement) {
 		fmt.Println(element.Text)
 		text = element.Text
 	})
