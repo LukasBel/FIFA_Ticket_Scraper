@@ -51,6 +51,12 @@ func (r *Repository) RegisterEmail(c *fiber.Ctx) error {
 	}
 
 	c.Status(http.StatusOK).JSON(&fiber.Map{"message": "user registered successfully!"})
+
+	err = handlers.SendMail([]string{UserModel.Email}, handlers.WelcomeMessage())
+	if err != nil {
+		log.Panic(err)
+	}
+
 	return nil
 }
 
@@ -162,12 +168,12 @@ func main() {
 		log.Fatal("Failed to migrate database")
 	}
 
-	//emailAddresses, err := r.GetUsersEmails()
-	//
-	//err = handlers.SendMail(emailAddresses)
-	//if err != nil {
-	//	log.Panic(err)
-	//}
+	emailAddresses, err := r.GetUsersEmails()
+
+	err = handlers.SendMail(emailAddresses, handlers.Message())
+	if err != nil {
+		log.Panic(err)
+	}
 
 	app := fiber.New()
 	r.SetupRoutes(app)
