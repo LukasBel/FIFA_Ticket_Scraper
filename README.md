@@ -1,4 +1,5 @@
 # FIFA Ticket WebScraper
+## Disclaimer: The offical FIFA website has released their own newsletter sign-up for tickets and removed any public information relating to the ticket release date. Thus this project has now served its purpose in full.
 
 ## Overview
 This project is a FIFA Ticket WebScraper designed to monitor the status of tickets for the FIFA World Cup. It provides functionality to track ticket availability and notifies the user via email when tickets go on sale or when there's relevant information available.
